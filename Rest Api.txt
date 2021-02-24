@@ -1,0 +1,72 @@
+const express = require('express');
+const bodyParser = require('body-parser');
+const app = express();
+const mysql = require('mysql');
+ 
+// parse application/json
+app.use(bodyParser.json());
+ 
+//create database connection
+const conn = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: 'root',
+  database: 'vikas',
+ 
+//connect to database
+/*conn((err) =>{
+  if(err) throw err;
+  console.log('Mysql Connected...');
+*/
+});
+ 
+//show all products
+app.get('/api/userDetails',(req, res) => {
+  let sql = "SELECT * FROM User_Details";
+  let query = conn.query(sql, (err, results) => {
+    if(err) throw err;
+    res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+  });
+});
+ 
+//show single product
+app.get('/api/userDetails/:id',(req, res) => {
+  let sql = "SELECT * FROM User_Details WHERE UserID="+req.params.id;
+  let query = conn.query(sql, (err, results) => {
+    if(err) throw err;
+    res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+  });
+});
+ 
+//add new product
+app.post('/api/userDetails/save',(req, res) => {
+  let data = {UserName: req.body.UserName, ContactNumber: req.body.ContactNumber,Password: req.body.Password, CreateDateTime: req.body.CreateDateTime};
+  let sql = "INSERT INTO User_Details SET ?";
+  let query = conn.query(sql, data,(err, results) => {
+    if(err) throw err;
+    res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+  });
+});
+ 
+//update product
+/*app.put('/api/products/:id',(req, res) => {
+  let sql = "UPDATE product SET product_name='"+req.body.product_name+"', product_price='"+req.body.product_price+"' WHERE product_id="+req.params.id;
+  let query = conn.query(sql, (err, results) => {
+    if(err) throw err;
+    res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+  });
+});*/
+ 
+//Delete product
+app.delete('/api/userDetails/deleteAll',(req, res) => {
+  let sql = "truncate table User_Details";
+  let query = conn.query(sql, (err, results) => {
+    if(err) throw err;
+      res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+  });
+});
+ 
+//Server listening
+app.listen(3002,() =>{
+  console.log('Server started on port 3002...');
+});
